@@ -1,0 +1,27 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: windows-latest
+
+steps:
+- task: NuGetCommand@2
+  inputs:
+    command: 'pack'
+    arguments: '-NoPackageAnalysis'
+    packagesToPack: '$(Build.SourcesDirectory)/*.nuspec'
+    versioningScheme: 'byEnvVar'
+    versionEnvVar: 'envVersion'
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: 'c2f653d2-7311-4f13-83fd-b8426a0fa107'
+    allowPackageConflicts: true

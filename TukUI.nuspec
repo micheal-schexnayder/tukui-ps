@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>TukUI</id>
+        <version>1.0.0</version>
+        <title>TukUI Module</title>
+        <description>PowerShell Core Module managing the TukUI Addons for World of Warcraft</description>
+        <authors>Micheal Schexnayder</authors>
+        <projectUrl>https://xman2450.visualstudio.com/DefaultCollection/PSModules/_git/Tukui</projectUrl>
+        <releaseNotes></releaseNotes>
+        <repository type="git" url="https://xman2450.visualstudio.com/DefaultCollection/PSModules/_git/Tukui" branch="master" commit="" />
+    </metadata>
+
+    <files>
+        <file src="Private\**" target="/Private" />
+        <file src="Public\**" target="/Public" />
+        <file src="Scripts\**" target="/Scripts" />
+        <file src="TukUI.psd1" target="/" />
+        <file src="TukUI.psm1" target="/" />
+
+    </files>
+
+</package>
