@@ -25,13 +25,13 @@ Function New-TUKConfig {
     if ($CreateNew){
         $config = [ordered]@{
             "version" = Get-TukuiVersionString -Verbose:$VerbosePreference;
-            "baseUrl" = "https://www.tukui.org";
+            "baseUrl" = $tukinfo.baseUrl;
             "wowinstalls" = "";
         }
         
         $installs = New-Object System.Collections.ArrayList
 
-        foreach ($install in ("Classic","Retail")){
+        foreach ($install in ("Classic","WotLK","Retail")){
             $thisinstall = @{
                 "$install" = New-TUKConfigWoWInstallation -Edition $install -Verbose:$VerbosePreference
             }
@@ -40,7 +40,7 @@ Function New-TUKConfig {
 
         $config.wowinstalls = $installs
         $config | ConvertTo-Json -Depth 10 | Out-File $ConfigFile
-        write-Output "$msgheader New TukUI configurations written to $ConfigFile"
+        Write-Verbose "$msgheader New TukUI configurations written to $ConfigFile"
     }
 
 }

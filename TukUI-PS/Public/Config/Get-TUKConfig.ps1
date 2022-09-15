@@ -2,6 +2,8 @@ Function Get-TUKConfig {
     [cmdletbinding()]
     param()
 
+    Get-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
+
     $msgheader = "[$($MyInvocation.MyCommand)]" 
 
     if (Test-Path $Global:ConfigPath){ Get-Content -Path $Global:ConfigPath -Raw | ConvertFrom-Json }
@@ -12,10 +14,11 @@ Function Get-TUKConfig {
             $answer = Read-Host "$msgheader Would you like to create it now? (Y/N)"
             switch ($answer){
                 'Y'     { 
-                    New-TUKConfig -InstallDrive $Global:InstallDrive; $continueloop = $false;  
-                    Get-Content -Path $Global:ConfigPath -Raw | ConvertFrom-Json
-                    break;}
-                'N'     { Write-Output "$msgheader Config file creation stopped."; $continueloop = $false; break; }
+                          New-TUKConfig -InstallDrive $Global:InstallDrive; $continueloop = $false;  
+                          Get-Content -Path $Global:ConfigPath -Raw | ConvertFrom-Json
+                          break;
+                        }
+                'N'     { Write-Verbose "$msgheader Config file creation stopped."; $continueloop = $false; break; }
                 default { break; }
             }
         }   

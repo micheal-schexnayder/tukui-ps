@@ -2,7 +2,7 @@ function New-TUKConfigWoWInstallation {
     [cmdletbinding()]
     param(
         [parameter(Mandatory=$true)]
-        [validateset("Classic","Retail")]
+        [validateset("Classic","WotLK","Retail")]
         [string]$Edition,
         [string]$InstallDrive = $Global:InstallDrive
     )

@@ -6,27 +6,28 @@ Function Get-TUKAddonList {
         [string]$Name,
         [Parameter(ParameterSetName='Name')]
         [switch]$Match,
-        [ValidateSet('Classic','Classic-WoTLK','Retail')]
+        [ValidateSet('Classic','WotLK','Retail')]
         [string]$WoWEdition = 'Retail',
         [Parameter(ParameterSetName='All',Position=1)]
         [switch]$All
     )
 
     Begin {
+
+        Get-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
+
         $msgheader = "[$($MyInvocation.MyCommand)]"
         $addonlist = @()
 
-        $TukUIBaseUrl = "https://www.tukui.org"
-
         Write-Verbose "$msgheader Getting all AddOns for $WoWEdition World of Warcraft"
-        #see https://www.tukui.org/api.php
+        
         $allAddonsUrl = Switch ($WoWEdition){
-                            'Classic'       { "$TukUIBaseUrl/api.php?classic-addons" };
-                            'Classic-WoTLK' { "$TukUIBaseUrl/api.php?classic-tbc-addons"}
-                            'Retail'        { "$TukUIBaseUrl/api.php?addons" };
+                            'Classic'   { $tukInfo.classicApiUrl };
+                            'WoTLK'     { $tukInfo.wotlkApiUrl };
+                            'Retail'    { $tukInfo.retailApiUrl };
                         }
 
-        $alladdons = Invoke-RestMethod -uri $allAddonsUrl -Method Get | Sort-Object -Property Id
+        $alladdons = Invoke-RestMethod -uri $allAddonsUrl -Method Get | Sort-Object -Property name
         Write-Verbose "$msgheader Found: $($alladdons.count) addons"
     }    
 
@@ -40,14 +41,8 @@ Function Get-TUKAddonList {
             }
 
             'Name'  { 
-                if ($match){
-                    $addonlist += $alladdons | Where-Object { $_.Name -match $Name } 
-                    Write-Verbose "$msgheader Returning all addons that containing $Name ($(@($addonlist).count))"
-                }
-                else {
-                    $addonlist += $alladdons | Where-Object { $_.Name -eq $Name } 
-                    Write-Verbose "$msgheader Returning all addons that match $Name ($(@($addonlist).count))"
-                }
+                $addonlist += $alladdons | Where-Object { $_.Name -eq $Name } 
+                Write-Verbose "$msgheader Returning all addons that equals $Name ($(@($addonlist).count))"
             }
 
             default { Write-Warning "$msgheader We've hit a block we shouldn't have been able to! Oops! " }

@@ -6,18 +6,13 @@
         <title>TukUI Module</title>
         <description>PowerShell Core Module managing the TukUI Addons for World of Warcraft</description>
         <authors>Micheal Schexnayder</authors>
-        <projectUrl>https://xman2450.visualstudio.com/DefaultCollection/PSModules/_git/Tukui</projectUrl>
+        <projectUrl>https://github.com/MRSchexnayder/tukui-ps</projectUrl>
         <releaseNotes></releaseNotes>
-        <repository type="git" url="https://xman2450.visualstudio.com/DefaultCollection/PSModules/_git/Tukui" branch="master" commit="" />
+        <repository type="git" url="https://github.com/MRSchexnayder/tukui-ps" branch="main" commit="" />
     </metadata>
 
     <files>
-        <file src="Private\**" target="/Private" />
-        <file src="Public\**" target="/Public" />
-        <file src="Scripts\**" target="/Scripts" />
-        <file src="TukUI.psd1" target="/" />
-        <file src="TukUI.psm1" target="/" />
-
+        <file src="TukUI-PS\**" target="/" />
     </files>
 
 </package>

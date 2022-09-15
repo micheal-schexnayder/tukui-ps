@@ -1,6 +1,14 @@
 # default loader file for module
 
 # variables
+#see https://www.tukui.org/api.php
+$tukInfo = @{
+    "baseUrl"       = "https://www.tukui.org";
+    "classicApiUrl" = "https://www.tukui.org/api.php?classic-addons";
+    "wotlkApiUrl"   = "https://www.tukui.org/api.php?classic-tbc-addons";
+    "retailApiUrl"  = "https://www.tukui.org/api.php?addons"; 
+}
+
 $Global:ConfigPath = "$env:USERPROFILE\AppData\Roaming\TukUI\tukui_config.json"
 $Global:InstallDrive = "C:\"
 

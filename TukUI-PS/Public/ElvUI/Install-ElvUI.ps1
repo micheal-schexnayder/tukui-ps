@@ -1,24 +1,28 @@
 Function Install-ElvUI {
     [cmdletbinding()]
     param(
-        [ValidateSet('Classic','Classic-WoTLK','Retail')]
-        [string]$Edition,
+        [ValidateSet('Classic','WotLK','Retail')]
+        [string]$WoWEdition,
         [switch]$Force
     )
 
     Begin {
+
+        Get-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
+
         $msgheader = "[$($MyInvocation.MyCommand)]"
-        switch ($Edition) {
+        switch ($WoWEdition) {
             'Classic' { 
-                $Metadata = Get-TUKAddon -Name ElvUI -WoWEdition Classic -Verbose:$VerbosePreference 
+                $Metadata = Get-TUKAddon -Name ElvUI -WoWEdition Classic  
                 $WoWPath = (Get-TUKConfig).wowinstalls.classic.path
             }
-            'Classic-WoTLK' { 
-                $Metadata = Get-TUKAddon -Name ElvUI -WoWEdition Classic-WoTLK -Verbose:$VerbosePreference 
-                $WoWPath = (Get-TUKConfig).wowinstalls.'classic-wotlk'.path
+            'WotLK' { 
+                $Metadata = Get-TUKAddon -Name ElvUI -WoWEdition WotLK
+                $WoWPath = (Get-TUKConfig).wowinstalls.wotlk.path
             }
             Default { 
-                $Metadata = Get-TUKAddon -Name ElvUI -WoWEdition Retail -Verbose:$VerbosePreference 
+                # default is Retail
+                $Metadata = Get-TUKAddon -Name ElvUI -WoWEdition Retail 
                 $WoWPath = (Get-TUKConfig).wowinstalls.retail.path
             }
         }

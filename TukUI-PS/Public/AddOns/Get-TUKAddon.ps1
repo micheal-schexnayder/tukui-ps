@@ -3,11 +3,13 @@ Function Get-TUKAddon {
     param(
         [Parameter(Mandatory=$true)]
         [string]$Name,
-        [ValidateSet('Classic','Classic-WoTLK','Retail')]
+        [ValidateSet('Classic','WotLK','Retail')]
         [string]$WoWEdition = "Retail"
     )
 
     Begin {
+
+        Get-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState 
 
         $msgheader = "[$($MyInvocation.MyCommand)]"
         $baseUrl = (Get-TUKConfig -Verbose:$VerbosePreference).baseUrl
@@ -20,29 +22,31 @@ Function Get-TUKAddon {
     Process {
         if ($WoWEdition -eq 'Retail' -and $Name -eq "ElvUI"){
             # have to do this craziness since the retail version of ElvUI doesn't show up in the addon listing in the api 
-            Write-Verbose "$msgheader Downloading ElvUI for WoW retail"
-            $welcome = invoke-webrequest -uri "$baseUrl/welcome.php" -Method Get
+            # Write-Verbose "$msgheader Downloading ElvUI for WoW retail"
+            # $welcome = invoke-webrequest -uri "$baseUrl/welcome.php" -Method Get
 
-            $dldata = (($welcome.links | select-string 'downloads/elvui' ) -Split " " | ?{ $_ -match 'href' })[0]
-            $dlurl = $dldata.Split('=')[1].Replace('"','')
-            Write-Verbose "`$dlurl: $dlurl"
+            # $dldata = (($welcome.links | select-string 'downloads/elvui' ) -Split " " | ?{ $_ -match 'href' })[0]
+            # $dlurl = $dldata.Split('=')[1].Replace('"','')
+            # Write-Verbose "`$dlurl: $dlurl"
             
-            $start = $($dlurl.LastIndexOf('/')+1)
-            $length = $($dlurl.Length - $start - ($dlurl.Length - $dlurl.IndexOf('.zip')))
-            $pkginfo = $dlurl.Substring($start,$length).Split('-')
+            # $start = $($dlurl.LastIndexOf('/')+1)
+            # $length = $($dlurl.Length - $start - ($dlurl.Length - $dlurl.IndexOf('.zip')))
+            # $pkginfo = $dlurl.Substring($start,$length).Split('-')
 
-            $addonmetadata = @{
-                "url"     = $baseUrl + $dlurl;
-                "name"    = $pkginfo[0];
-                "version" = $pkginfo[1];
-            }
+            # $addonmetadata = @{
+            #     "url"     = $baseUrl + $dlurl;
+            #     "name"    = $pkginfo[0];
+            #     "version" = $pkginfo[1];
+            # }
+
+            # figured out that the TukUI and ElvUI addon's are a part of the 'classic' api
+            Write-Verbose "$msgheader Executing: Get-TUKAddonList -Name $Name -WoWEdition $WoWEdition"
+            $addonmetadata = Get-TUKAddonList -Name $Name -WoWEdition Classic
         }
         else {
             Write-Verbose "$msgheader Executing: Get-TUKAddonList -Name $Name -WoWEdition $WoWEdition"
-            $addonmetadata = Get-TUKAddonList -Name $Name -WoWEdition $WoWEdition -Verbose:$VerbosePreference
+            $addonmetadata = Get-TUKAddonList -Name $Name -WoWEdition $WoWEdition
         }
-        
-        $downloadSuccessful = $false
         
         switch (@($addonmetadata).count){
             0 { Write-Warning "$msgheader No packages found with Name: $Name"; break; }
@@ -57,11 +61,10 @@ Function Get-TUKAddon {
                 else {
                     try {
                         Write-Verbose "$msgheader Downloading $($addonmetadata.name) $($addonmetadata.version)"
-                        Invoke-RestMethod -Uri $addonmetadata.url -Method Get -OutFile $downloadPath -Verbose:$VerbosePreference -ErrorAction Stop
-                        $downloadSuccessful = $true
+                        Invoke-RestMethod -Uri $addonmetadata.url -Method Get -OutFile $downloadPath -ErrorAction Stop
                     }
                     catch {
-                        $_
+                        $_.ErrorDetails.Message
                     }
                 }
                 
