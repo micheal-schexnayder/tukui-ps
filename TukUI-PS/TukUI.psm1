@@ -5,8 +5,16 @@
 $tukInfo = @{
     "baseUrl"       = "https://www.tukui.org";
     "classicApiUrl" = "https://www.tukui.org/api.php?classic-addons";
-    "wotlkApiUrl"   = "https://www.tukui.org/api.php?classic-tbc-addons";
-    "retailApiUrl"  = "https://www.tukui.org/api.php?addons"; 
+    "wotlkApiUrl"   = "https://www.tukui.org/api.php?classic-wotlk-addons";
+    "retailApiUrl"  = "https://www.tukui.org/api.php?addons";
+}
+
+$moduleRoot = $PSScriptRoot
+
+$Global:WoWEditions = @('Classic','WotLK','Retail')
+
+class WoWEdition : System.Management.Automation.IValidateSetValuesGenerator {
+    [String[]] GetValidValues() { return $Global:WoWEditions }
 }
 
 $Global:ConfigPath = "$env:USERPROFILE\AppData\Roaming\TukUI\tukui_config.json"
@@ -29,5 +37,5 @@ Export-ModuleMember -Function $Public.Basename
 Export-ModuleMember -Function $Scripts.Basename
 
 if (-not (Test-Path $Global:ConfigPath)){ 
-    Write-Host "Module configuration file not found. Creating. Please wait..."; New-TukConfig 
+    Write-Verbose "Module configuration file not found. Creating. Please wait..."; New-TukConfig 
 }

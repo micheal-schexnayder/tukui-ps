@@ -1,7 +1,7 @@
 Function Install-ElvUI {
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess=$true)]
     param(
-        [ValidateSet('Classic','WotLK','Retail')]
+        [ValidateSet([WoWEdition],ErrorMessage="Value '{0}' is invalid. Try one of: {1}")]
         [string]$WoWEdition,
         [switch]$Force
     )
@@ -11,84 +11,81 @@ Function Install-ElvUI {
         Get-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
 
         $msgheader = "[$($MyInvocation.MyCommand)]"
-        switch ($WoWEdition) {
-            'Classic' { 
-                $Metadata = Get-TUKAddon -Name ElvUI -WoWEdition Classic  
-                $WoWPath = (Get-TUKConfig).wowinstalls.classic.path
-            }
-            'WotLK' { 
-                $Metadata = Get-TUKAddon -Name ElvUI -WoWEdition WotLK
-                $WoWPath = (Get-TUKConfig).wowinstalls.wotlk.path
-            }
-            Default { 
-                # default is Retail
-                $Metadata = Get-TUKAddon -Name ElvUI -WoWEdition Retail 
-                $WoWPath = (Get-TUKConfig).wowinstalls.retail.path
-            }
-        }
 
         $lastSuccessFullInstall = ""
     }
 
     Process {
 
-        $AddonsPath         = "$WoWPath\Interface\Addons"
+        $Edition = Get-WoWEditionDetails -WoWEdition $WoWEdition
+
+        $AddonsPath         = "$($Edition.WoWPath)\Interface\Addons"
         $existingdata       = "$AddonsPath\ElvUi\metadata.json"
-        $installNew         = $true
+        $installNew         = $false
         $installSucceeded   = $false
         $currentVersion     = ""
-        $newversion         = $Metadata.Version
+        $newversion         = $Edition.Metadata.Version
 
-        if (Test-Path $Metadata.DownloadPath){
+        if (Test-Path $Edition.Metadata.DownloadPath){
 
             # check to see if the latest version is already installed (metadata.json)
             if  (Test-Path $existingdata){
-                $existingMetadata = Get-Content -RAW -Path $existingdata -Verbose:$VerbosePreference | ConvertFrom-json
+                $existingMetadata = Get-Content -RAW -Path $existingdata | ConvertFrom-json
                 $currentVersion = $existingMetadata.version
-                if ($currentVersion -eq $newversion -and $Force -eq $false){
+                if ($currentVersion -eq $newversion){
                     Write-Output "$msgheader Latest version: $newversion, already installed"; 
-                    $installNew = $false;  $installSucceeded = $true; $lastSuccessFullInstall = $existingMetadata.InstalledOn;
+                    if ($Force){ $installNew = $true }  
+                    $installSucceeded = $true; $lastSuccessFullInstall = $existingMetadata.InstalledOn;
                     Write-Verbose $existingMetadata.InstalledOn
                 } 
-                else { Write-Output "$msgheader Currently installed version of ElvUI: $currentVersion, is out of date." }
+                else { 
+                    Write-Output "$msgheader Currently installed version of ElvUI: $currentVersion, is out of date." 
+                    $installNew = $true
+                }
             }
-            else { Write-Output "$msgheader Installing new version of ElvUI ($newversion) to $AddonsPath" }
 
             if ($installNew){
-                $ElvUIPath = "$AddonsPath\ElvUI"
-                if (Test-Path "$ElvUIPath"){ 
-                    Write-Verbose "$msgheader Deleting: $ElvUIPath"
-                    Remove-Item -Path "$ElvUIPath" -Recurse -Force
-                }
 
-                $ElvUIOptionsUIPath = "$AddonsPath\ElvUI_OptionsUI"
-                if (Test-Path "$ElvUIOptionsUIPath"){ 
-                    Write-Verbose "$msgheader Deleting: $ElvUIOptionsUIPath"
-                    Remove-Item -Path $ElvUIOptionsUIPath -Recurse -Force 
-                }
                 # extract the file to the temporary space (testing the zip file before modifying system)
-                try   { Expand-Archive -Path $Metadata.DownloadPath -DestinationPath $AddonsPath -Force -ErrorAction Stop }
-                catch { Write-Error "$msgheader Error expanding zip file: $($Metadata.DownloadPath) to $AddonsPath"; throw }
+                $tempPath  = "$env:TEMP\WoWAddonTest"
+                $validFile = $true
+                try   { Expand-Archive -Path $Edition.Metadata.DownloadPath -DestinationPath $tempPath -Force -ErrorAction Stop }
+                catch { Write-Warning "Something is wrong with the downloaded file. System will not be modified"
+                        $validFile = $false 
+                    }
 
-                $lastSuccessFullInstall = Get-Date -Format o
-                $Metadata | Add-Member -MemberType NoteProperty -Name 'InstalledOn' -Value $lastSuccessFullInstall
-                $Metadata | Add-Member -MemberType NoteProperty -Name "InstalledTo" -Value $AddonsPath
+                
+                if ($PSCmdlet.ShouldProcess("$($Edition.Metadata.name) $($Edition.Metadata.version)")){
+                    if ($validFile){
+                        Write-Output "$msgheader Installing new version of ElvUI ($newversion) to $AddonsPath" 
+                        Remove-ElvUI -AddOnsPath $AddonsPath
+                        try   { 
+                            Expand-Archive -Path $Edition.Metadata.DownloadPath -DestinationPath $AddonsPath -Force -ErrorAction Stop 
+                            $installSucceeded = $true
+                        }
+                        catch { Write-Error "$msgheader Error expanding zip file: $($Edition.Metadata.DownloadPath) to $AddonsPath" -ErrorAction Stop }
+                    }
+                    else { Write-Verbose "ERROR: The incoming file is not valid. No system changes occurred."}
+                }
 
-                # write out the new metadata.json file
-                Write-Verbose "$msgheader Writing new metadata to $existingdata"
-                $Metadata | Convertto-json -depth 10 | Out-file $existingdata
+                if ($installSucceeded){ 
+                    $lastSuccessFullInstall = Get-Date -Format o
+                    $Edition.Metadata | Add-Member -MemberType NoteProperty -Name 'InstalledOn' -Value $lastSuccessFullInstall
+                    $Edition.Metadata | Add-Member -MemberType NoteProperty -Name "InstalledTo" -Value $AddonsPath
 
-                $installSucceeded = $true
+                    # write out the new metadata.json file
+                    Write-Verbose "$msgheader Writing new metadata to $existingdata"
+                    $Edition.Metadata | Convertto-json -depth 10 | Out-file $existingdata
+
+                    Write-Output "$msgheader Successfully installed ElvUI $newversion on $(Get-Date $lastSuccessFullInstall)"
+                }
+                else { 
+                    Write-Warning "$msgheader Something went wrong. You may need to manually update the addon" 
+                }
             }
+        }
 
-        }
-        else {
-            Write-Error "$msgheader Download FILE NOT FOUND"
-        }
     }
 
-    End {
-        if ($installSucceeded){ Write-Output "$msgheader Successfully installed ElvUI $newversion on $(Get-Date $lastSuccessFullInstall)"}
-        else { Write-Warning "$msgheader Something went wrong. You may need to manually update the addon" }
-     }
+    End { }
 }

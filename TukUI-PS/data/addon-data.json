@@ -1,0 +1,23 @@
+[
+    {
+        "name" : "ElvUI",
+        "WoWEdition": "Retail",
+        "minVersion": 12.0,
+        "maxVersion": 20.0,
+        "referenceUrl": "https://github.com/tukui-org/ElvUI/blob/development/CHANGELOG_Mainline.md"
+    },
+    {
+        "name" : "ElvUI",
+        "WoWEdition": "Classic",
+        "minVersion": 1.73,
+        "maxVersion": 1.99,
+        "referenceUrl": "https://github.com/tukui-org/ElvUI/blob/development/CHANGELOG_Classic.md"
+    },
+    {
+        "name" : "ElvUI",
+        "WoWEdition": "WotLK",
+        "minVersion": 3.00,
+        "maxVersion": 3.99,
+        "referenceUrl": "https://github.com/tukui-org/ElvUI/blob/development/CHANGELOG_Wrath.md"
+    }
+]

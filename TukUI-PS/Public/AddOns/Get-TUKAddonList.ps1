@@ -6,7 +6,7 @@ Function Get-TUKAddonList {
         [string]$Name,
         [Parameter(ParameterSetName='Name')]
         [switch]$Match,
-        [ValidateSet('Classic','WotLK','Retail')]
+        [ValidateSet([WoWEdition],ErrorMessage="Value '{0}' is invalid. Try one of: {1}")]
         [string]$WoWEdition = 'Retail',
         [Parameter(ParameterSetName='All',Position=1)]
         [switch]$All

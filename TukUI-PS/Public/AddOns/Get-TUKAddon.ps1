@@ -1,9 +1,9 @@
 Function Get-TUKAddon {
-    [cmdletbinding()]
+    [cmdletbinding(SupportsShouldProcess=$true)]
     param(
         [Parameter(Mandatory=$true)]
         [string]$Name,
-        [ValidateSet('Classic','WotLK','Retail')]
+        [ValidateSet([WoWEdition],ErrorMessage="Value '{0}' is invalid. Try one of: {1}")]
         [string]$WoWEdition = "Retail"
     )
 
@@ -54,30 +54,34 @@ Function Get-TUKAddon {
             1 {
                 $packageName = "$($addonmetadata.name).$($addonmetadata.version)-$WoWEdition.zip"
                 $downloadPath = "$OutputPath\$packageName"
+                $addonmetadata | Add-Member -MemberType NoteProperty -Name 'DownloadPath' -Value $downloadPath
 
                 if (Test-Path $downloadPath){
                     Write-Verbose "$msgheader $($addonmetadata.name) $($addonmetadata.version) already downloaded. Found file: $downloadpath"
                 }
                 else {
-                    try {
-                        Write-Verbose "$msgheader Downloading $($addonmetadata.name) $($addonmetadata.version)"
-                        Invoke-RestMethod -Uri $addonmetadata.url -Method Get -OutFile $downloadPath -ErrorAction Stop
-                    }
-                    catch {
-                        $_.ErrorDetails.Message
+                    if (Test-AddonVersion -Name $Name -WoWEdition $WoWEdition -Version $addonmetadata.version){
+                        try {
+                            if ($PSCmdlet.ShouldProcess("$($addonmetadata.name) $($addonmetadata.version)")){
+                                Write-Verbose "$msgheader Downloading $($addonmetadata.name) $($addonmetadata.version)"
+                                Invoke-RestMethod -Uri $addonmetadata.url -Method Get -OutFile $downloadPath -ErrorAction Stop
+                            }
+                        }
+                        catch {
+                            $_.ErrorDetails.Message
+                        }
                     }
                 }
                 
                 if (Test-Path $downloadPath){
                     $addonmetadata | Add-Member -MemberType NoteProperty -Name 'DownloadStatus' -Value "Successful"
-                    $addonmetadata | Add-Member -MemberType NoteProperty -Name 'DownloadPath' -Value $downloadPath
                     $addonmetadata | Add-Member -MemberType NoteProperty -Name 'DownloadedOn' -Value $(Get-Date -Format o)
                 } 
                 
             }
 
             { $_ -gt 1 } {
-
+                Write-Warning "$msgHeader Too many results returned"
             }
 
             default { Write-Warning "$msgheader We've hit a block we shouldn't have been able to! Oops! " }
