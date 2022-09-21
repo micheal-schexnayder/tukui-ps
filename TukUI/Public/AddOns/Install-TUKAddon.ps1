@@ -1,9 +1,10 @@
-using module Tukui
-Function Install-ElvUI {
+Function Install-TUKAddon {
     [cmdletbinding(SupportsShouldProcess=$true)]
     param(
+        [Parameter(Mandatory=$true)]
+        [string]$Name,
         [ValidateSet([WoWEdition],ErrorMessage="Value '{0}' is invalid. Try one of: {1}")]
-        [string]$WoWEdition,
+        [string]$WoWEdition = "Retail",
         [switch]$Force
     )
 
@@ -18,10 +19,10 @@ Function Install-ElvUI {
 
     Process {
 
-        $Edition = Get-WoWEditionDetails -Name "ElvUI" -WoWEdition $WoWEdition
+        $Edition = Get-WoWEditionDetails -Name $Name -WoWEdition $WoWEdition
 
         $AddonsPath         = "$($Edition.WoWPath)\Interface\Addons"
-        $existingdata       = "$AddonsPath\ElvUi\metadata.json"
+        $existingdata       = "$AddonsPath\$Name\metadata.json"
         $installNew         = $false
         $installSucceeded   = $false
         $currentVersion     = ""
@@ -40,9 +41,13 @@ Function Install-ElvUI {
                     Write-Verbose $existingMetadata.InstalledOn
                 } 
                 else { 
-                    Write-Output "$msgheader Currently installed version of ElvUI: $currentVersion, is out of date." 
+                    Write-Output "$msgheader Currently installed version of $Name : $currentVersion, is out of date." 
                     $installNew = $true
                 }
+            }
+            else { 
+                Write-Output "$msgheader Currently installed version of $Name, was not installed by this module. Re-installing latest version" 
+                $installNew = $true
             }
 
             if ($installNew){
@@ -58,7 +63,7 @@ Function Install-ElvUI {
                 
                 if ($PSCmdlet.ShouldProcess("$($Edition.Metadata.name) $($Edition.Metadata.version)")){
                     if ($validFile){
-                        Write-Output "$msgheader Installing new version of ElvUI ($newversion) to $AddonsPath" 
+                        Write-Output "$msgheader Installing new version of $Name ($newversion) to $AddonsPath" 
                         Remove-ElvUI -AddOnsPath $AddonsPath
                         try   { 
                             Expand-Archive -Path $Edition.Metadata.DownloadPath -DestinationPath $AddonsPath -Force -ErrorAction Stop 
@@ -78,7 +83,7 @@ Function Install-ElvUI {
                     Write-Verbose "$msgheader Writing new metadata to $existingdata"
                     $Edition.Metadata | Convertto-json -depth 10 | Out-file $existingdata
 
-                    Write-Output "$msgheader Successfully installed ElvUI $newversion on $(Get-Date $lastSuccessFullInstall)"
+                    Write-Output "$msgheader Successfully installed $Name $newversion on $(Get-Date $lastSuccessFullInstall)"
                 }
                 else { 
                     Write-Warning "$msgheader Something went wrong. You may need to manually update the addon" 
