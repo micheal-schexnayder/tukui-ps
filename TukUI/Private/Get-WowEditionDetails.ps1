@@ -1,4 +1,3 @@
-using module Tukui
 Function Get-WoWEditionDetails {
     [cmdletbinding()]
     param(
@@ -6,7 +5,7 @@ Function Get-WoWEditionDetails {
         [string]$Name,
         [Parameter(Mandatory=$true)]
         [ValidateSet([WoWEdition],ErrorMessage="Value '{0}' is invalid. Try one of: {1}")]
-        [string]$WoWEdition = "Retail"
+        [string]$WoWEdition
     )
 
     Get-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
@@ -17,6 +16,8 @@ Function Get-WoWEditionDetails {
         'MetaData' = (Get-TUKAddon -Name $Name -WoWEdition $WoWEdition);
         'WoWPath' = $null;
     }
+
+    Write-Verbose "$msgheader Metadata: $($EditionDetails.MetaData)"
 
     switch ($WoWEdition) {
         'Classic' {  
@@ -30,6 +31,8 @@ Function Get-WoWEditionDetails {
             $EditionDetails.WoWPath = (Get-TUKConfig).wowinstalls.retail.path
         }
     }
+
+    Write-Verbose "$msgheader WoWPath: $($EditionDetails.WoWPath)"
 
     return $EditionDetails
 }
