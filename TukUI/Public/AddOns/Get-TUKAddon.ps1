@@ -1,4 +1,3 @@
-using module Tukui
 Function Get-TUKAddon {
     [cmdletbinding(SupportsShouldProcess=$true)]
     param(
@@ -43,16 +42,14 @@ Function Get-TUKAddon {
                     Write-Verbose "$msgheader $($addonmetadata.name) $($addonmetadata.version) already downloaded. Found file: $downloadpath"
                 }
                 else {
-                    if (Test-AddonVersion -Name $Name -WoWEdition $WoWEdition -Version $addonmetadata.version){
-                        try {
-                            if ($PSCmdlet.ShouldProcess("$($addonmetadata.name) $($addonmetadata.version)")){
-                                Write-Verbose "$msgheader Downloading $($addonmetadata.name) $($addonmetadata.version)"
-                                Invoke-RestMethod -Uri $addonmetadata.url -Method Get -OutFile $downloadPath -ErrorAction Stop
-                            }
+                    try {
+                        if ($PSCmdlet.ShouldProcess("$($addonmetadata.name) $($addonmetadata.version)")){
+                            Write-Verbose "$msgheader Downloading $($addonmetadata.name) $($addonmetadata.version)"
+                            Invoke-RestMethod -Uri $addonmetadata.url -Method Get -OutFile $downloadPath -ErrorAction Stop
                         }
-                        catch {
-                            $_.ErrorDetails.Message
-                        }
+                    }
+                    catch {
+                        $_.ErrorDetails.Message
                     }
                 }
                 
