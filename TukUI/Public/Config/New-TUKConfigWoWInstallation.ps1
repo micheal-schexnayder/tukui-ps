@@ -1,4 +1,3 @@
-using module Tukui
 function New-TUKConfigWoWInstallation {
     [cmdletbinding()]
     param(

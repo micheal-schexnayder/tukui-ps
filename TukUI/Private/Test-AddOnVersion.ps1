@@ -1,4 +1,3 @@
-using module Tukui
 Function Test-AddOnVersion {
     [cmdletbinding()]
     param(

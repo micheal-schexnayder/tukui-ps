@@ -11,19 +11,13 @@ $tukInfo = @{
 
 $tukuiRoot = $PSScriptRoot
 
-class WoWEdition : System.Management.Automation.IValidateSetValuesGenerator {
-    [String[]] GetValidValues() { 
-        $Global:Editions = @('Classic','WotLK','Retail')
-        return $Global:Editions
-    }
-}
-
 $Global:ConfigPath = "$env:USERPROFILE\AppData\Roaming\TukUI\tukui_config.json"
 $Global:InstallDrive = "C:\"
 
 # functions from files (function name should match filename)
-$subDirs = @('Public','Private','Scripts')
-$subDirs | ForEach-Object { New-Variable -Name $_ -Value @( Get-ChildItem -Path "$tukuiRoot\$_"  -Filter '*.ps1' -Recurse ) }
+$Public  = @( Get-ChildItem -Path "$tukuiRoot\Public"  -Filter '*.ps1' -Recurse )
+$Private = @( Get-ChildItem -Path "$tukuiRoot\Private"  -Filter '*.ps1' -Recurse )
+$Scripts = @( Get-ChildItem -Path "$tukuiRoot\Scripts"  -Filter '*.ps1' -Recurse )
 
 # dot source the files 
 foreach ($type in ($Public, $Private, $Scripts)){
