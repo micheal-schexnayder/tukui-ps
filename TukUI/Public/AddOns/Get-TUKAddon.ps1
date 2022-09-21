@@ -1,3 +1,4 @@
+using module Tukui
 Function Get-TUKAddon {
     [cmdletbinding(SupportsShouldProcess=$true)]
     param(
@@ -20,25 +21,7 @@ Function Get-TUKAddon {
     }
 
     Process {
-        if ($WoWEdition -eq 'Retail' -and $Name -eq "ElvUI"){
-            # have to do this craziness since the retail version of ElvUI doesn't show up in the addon listing in the api 
-            # Write-Verbose "$msgheader Downloading ElvUI for WoW retail"
-            # $welcome = invoke-webrequest -uri "$baseUrl/welcome.php" -Method Get
-
-            # $dldata = (($welcome.links | select-string 'downloads/elvui' ) -Split " " | ?{ $_ -match 'href' })[0]
-            # $dlurl = $dldata.Split('=')[1].Replace('"','')
-            # Write-Verbose "`$dlurl: $dlurl"
-            
-            # $start = $($dlurl.LastIndexOf('/')+1)
-            # $length = $($dlurl.Length - $start - ($dlurl.Length - $dlurl.IndexOf('.zip')))
-            # $pkginfo = $dlurl.Substring($start,$length).Split('-')
-
-            # $addonmetadata = @{
-            #     "url"     = $baseUrl + $dlurl;
-            #     "name"    = $pkginfo[0];
-            #     "version" = $pkginfo[1];
-            # }
-
+        if ($WoWEdition -eq 'Retail' -and $Name -in ("ElvUI","TukUI")){
             # figured out that the TukUI and ElvUI addon's are a part of the 'classic' api
             Write-Verbose "$msgheader Executing: Get-TUKAddonList -Name $Name -WoWEdition $WoWEdition"
             $addonmetadata = Get-TUKAddonList -Name $Name -WoWEdition Classic

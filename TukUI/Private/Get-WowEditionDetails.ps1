@@ -1,9 +1,12 @@
+using module Tukui
 Function Get-WoWEditionDetails {
     [cmdletbinding()]
     param(
         [Parameter(Mandatory=$true)]
+        [string]$Name,
+        [Parameter(Mandatory=$true)]
         [ValidateSet([WoWEdition],ErrorMessage="Value '{0}' is invalid. Try one of: {1}")]
-        [string]$WoWEdition
+        [string]$WoWEdition = "Retail"
     )
 
     Get-CallerPreference -Cmdlet $PSCmdlet -SessionState $ExecutionContext.SessionState
@@ -11,22 +14,19 @@ Function Get-WoWEditionDetails {
     $msgheader = "[$($MyInvocation.MyCommand)]" 
 
     $EditionDetails = @{
-        'MetaData' = $null;
+        'MetaData' = (Get-TUKAddon -Name $Name -WoWEdition $WoWEdition);
         'WoWPath' = $null;
     }
 
     switch ($WoWEdition) {
-        'Classic' { 
-            $EditionDetails.Metadata = Get-TUKAddon -Name ElvUI -WoWEdition Classic  
+        'Classic' {  
             $EditionDetails.WoWPath = (Get-TUKConfig).wowinstalls.classic.path
         }
         'WotLK' { 
-            $EditionDetails.Metadata = Get-TUKAddon -Name ElvUI -WoWEdition WotLK
             $EditionDetails.WoWPath = (Get-TUKConfig).wowinstalls.wotlk.path
         }
         Default { 
             # default is Retail
-            $EditionDetails.Metadata = Get-TUKAddon -Name ElvUI -WoWEdition Retail 
             $EditionDetails.WoWPath = (Get-TUKConfig).wowinstalls.retail.path
         }
     }

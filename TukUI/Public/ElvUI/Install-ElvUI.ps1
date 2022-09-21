@@ -1,3 +1,4 @@
+using module Tukui
 Function Install-ElvUI {
     [cmdletbinding(SupportsShouldProcess=$true)]
     param(
@@ -17,7 +18,7 @@ Function Install-ElvUI {
 
     Process {
 
-        $Edition = Get-WoWEditionDetails -WoWEdition $WoWEdition
+        $Edition = Get-WoWEditionDetails -Name "ElvUI" -WoWEdition $WoWEdition
 
         $AddonsPath         = "$($Edition.WoWPath)\Interface\Addons"
         $existingdata       = "$AddonsPath\ElvUi\metadata.json"

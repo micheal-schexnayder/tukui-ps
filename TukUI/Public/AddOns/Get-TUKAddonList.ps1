@@ -1,3 +1,4 @@
+using module Tukui
 Function Get-TUKAddonList {
     [cmdletbinding()]
     param(

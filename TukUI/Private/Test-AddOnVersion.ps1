@@ -1,3 +1,4 @@
+using module Tukui
 Function Test-AddOnVersion {
     [cmdletbinding()]
     param(
@@ -17,13 +18,19 @@ Function Test-AddOnVersion {
     [double]$max = $addOn.maxVersion
 
 
-    if ( $Version -ge $min -and $Version -le $max ){
+    if ($addOn){
+        if ( $Version -ge $min -and $Version -le $max ){
+            return $true
+        }
+        else {
+            Write-Warning "$msgHeader $Name $Version ($WoWEdition) not within valid ranges: $min - $max"
+            Write-Warning "$msgHeader $($addOn.referenceUrl)"
+            return $false
+        }
+    }
+    else { 
         return $true
     }
-    else {
-        Write-Warning "$msgHeader $Name $Version ($WoWEdition) not within valid ranges: $min - $max"
-        Write-Warning "$msgHeader $($addOn.referenceUrl)"
-        return $false
-    }
+    
     
 }

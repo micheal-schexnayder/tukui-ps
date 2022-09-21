@@ -9,21 +9,21 @@ $tukInfo = @{
     "retailApiUrl"  = "https://www.tukui.org/api.php?addons";
 }
 
-$moduleRoot = $PSScriptRoot
-
-$Global:WoWEditions = @('Classic','WotLK','Retail')
+$tukuiRoot = $PSScriptRoot
 
 class WoWEdition : System.Management.Automation.IValidateSetValuesGenerator {
-    [String[]] GetValidValues() { return $Global:WoWEditions }
+    [String[]] GetValidValues() { 
+        $Global:Editions = @('Classic','WotLK','Retail')
+        return $Global:Editions
+    }
 }
 
 $Global:ConfigPath = "$env:USERPROFILE\AppData\Roaming\TukUI\tukui_config.json"
 $Global:InstallDrive = "C:\"
 
 # functions from files (function name should match filename)
-$Public  = @( Get-ChildItem -Path "$PSScriptRoot\Public"  -Filter '*.ps1' -Recurse )
-$Private = @( Get-ChildItem -Path "$PSScriptRoot\Private" -Filter '*.ps1' -Recurse )
-$Scripts = @( Get-ChildItem -Path "$PSScriptRoot\Scripts" -Filter '*.ps1' -Recurse )
+$subDirs = @('Public','Private','Scripts')
+$subDirs | ForEach-Object { New-Variable -Name $_ -Value @( Get-ChildItem -Path "$tukuiRoot\$_"  -Filter '*.ps1' -Recurse ) }
 
 # dot source the files 
 foreach ($type in ($Public, $Private, $Scripts)){
@@ -35,6 +35,7 @@ foreach ($type in ($Public, $Private, $Scripts)){
 
 Export-ModuleMember -Function $Public.Basename
 Export-ModuleMember -Function $Scripts.Basename
+Export-ModuleMember -Variable $tukuiRoot
 
 if (-not (Test-Path $Global:ConfigPath)){ 
     Write-Verbose "Module configuration file not found. Creating. Please wait..."; New-TukConfig 

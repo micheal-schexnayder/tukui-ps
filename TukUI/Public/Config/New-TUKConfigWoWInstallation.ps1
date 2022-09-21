@@ -1,8 +1,9 @@
+using module Tukui
 function New-TUKConfigWoWInstallation {
     [cmdletbinding()]
     param(
         [parameter(Mandatory=$true)]
-        [validateset("Classic","WotLK","Retail")]
+        [ValidateSet([WoWEdition],ErrorMessage="Value '{0}' is invalid. Try one of: {1}")]
         [string]$Edition,
         [string]$InstallDrive = $Global:InstallDrive
     )
