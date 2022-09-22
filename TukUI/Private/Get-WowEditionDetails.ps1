@@ -4,7 +4,7 @@ Function Get-WoWEditionDetails {
         [Parameter(Mandatory=$true)]
         [string]$Name,
         [Parameter(Mandatory=$true)]
-        [ValidateSet([WoWEdition],ErrorMessage="Value '{0}' is invalid. Try one of: {1}")]
+        [ValidateSet('Classic','WotLK','Retail')]
         [string]$WoWEdition
     )
 

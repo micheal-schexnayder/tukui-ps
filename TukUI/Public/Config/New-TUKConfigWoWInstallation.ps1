@@ -2,7 +2,7 @@ function New-TUKConfigWoWInstallation {
     [cmdletbinding()]
     param(
         [parameter(Mandatory=$true)]
-        [ValidateSet([WoWEdition],ErrorMessage="Value '{0}' is invalid. Try one of: {1}")]
+        [ValidateSet('Classic','WotLK','Retail')]
         [string]$Edition,
         [string]$InstallDrive = $Global:InstallDrive
     )

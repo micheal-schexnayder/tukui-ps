@@ -4,3 +4,5 @@ class WoWEdition : System.Management.Automation.IValidateSetValuesGenerator {
         return $Global:Editions
     }
 }
+
+#[ValidateSet([WoWEdition],ErrorMessage="Value '{0}' is invalid. Try one of: {1}")]

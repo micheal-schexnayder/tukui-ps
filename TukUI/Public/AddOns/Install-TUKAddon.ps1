@@ -3,7 +3,7 @@ Function Install-TUKAddon {
     param(
         [Parameter(Mandatory=$true)]
         [string]$Name,
-        [ValidateSet([WoWEdition],ErrorMessage="Value '{0}' is invalid. Try one of: {1}")]
+        [ValidateSet('Classic','WotLK','Retail')]
         [string]$WoWEdition = "Retail",
         [switch]$Force
     )
