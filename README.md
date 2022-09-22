@@ -1,6 +1,8 @@
 # Introduction
 
-This PowerShell module is designed to work with the World of Warcraft AddOn website: TukUI.org. It allows for easy and seemless installations of addons and specifically has functions for installing addons in both Retail and Classic versions of the game.
+This PowerShell module is designed to work with the World of Warcraft AddOn website: [TukUI.org](https://www.tukui.org/welcome.php). It allows for easy and seemless installations of addons and specifically has functions for installing addons in all three versions of the game: Retail, Wrath of the Lich King, and Classic. This module is a pet project of mine I work on in my free time, when not working on playing World of Warcraft itself!
+
+<font color=blue><strong>This PowerShell module is a work in progress. Many functions work well, but there is lots of room for improvement.</strong></font>
 
 ## Getting Started
 
@@ -14,19 +16,26 @@ Typical paths are:
 To use this module, use the 'Import-Module' cmdlet:
 
 ```PowerShell
-Import-Module TukUI
+Import-Module TukUI-ps\TukUI\TukUI.psd1
 ```
 
-## Functions included
+## Practical usage
 
-|Name|What it does|Notes|
-|----|------------|-----|
-|Get-TUKAddon|Downloads an addon from the website||
-|Get-TUKAddonList|Returns a list of available addons and optionally allows you to find specific addons||
-|New-TUKConfig|Creates the configuration file with details about your World of Warcraft installations||
-|Get-TUKConfig|Returns a hashtable with the contents of your config file||
-|New-TUKConfigWoWInstallation|Used to find World of Warcraft installations||
-|Install-ElvUI|Script that specifically allows for the installation of the ElvUI addon||
+When you first import the module it will create a 'config' file and attempt to determine where your World of Warcraft base installation folder is. This folder contains subfolders for each edition of the game installed. This config file is used to determine where addons are installed and ensure you get the right version of an addon for your installations.
+
+If you know the name of the addon you need you can simply run the following to install it directly from TukUI.org
+
+```PowerShell
+Install-TukAddon -Name <addonname> -WoWEdition [Classic|WotLK|Retail]
+```
+
+When installing an addon, a metadata.json file is generated in the addon folder. This file contains information about the currently installed version of the addon. If you re-run the same command, it will detect the version (recorded in metadata.json) installed as well as when, and compare it against the available version on TukUI.org to determine if an update is necessary. If the currently installed version is the same as the version from TukUI.org, it will not attempt to reinstall it. If they are different, the command will download the new version, remove the previous version, and install the new one.
+
+## TO-DO's
+
+* Configuration creation enhancements to make generation easier and more consistent.
+* Create a build process to create the publishable module
+* Publish module to the [PowerShell Gallery](https://www.powershellgallery.com/)
 
 ## Contribute
 

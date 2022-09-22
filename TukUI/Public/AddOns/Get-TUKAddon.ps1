@@ -34,7 +34,7 @@ Function Get-TUKAddon {
             0 { Write-Warning "$msgheader No packages found with Name: $Name"; break; }
 
             1 {
-                $packageName = "$($addonmetadata.name).$($addonmetadata.version)-$WoWEdition.zip"
+                $packageName = "$($addonmetadata.name).$($addonmetadata.version).zip"
                 $downloadPath = "$OutputPath\$packageName"
                 $addonmetadata | Add-Member -MemberType NoteProperty -Name 'DownloadPath' -Value $downloadPath
 

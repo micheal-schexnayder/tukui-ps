@@ -50,7 +50,7 @@ Function Install-TUKAddon {
                 $installNew = $true
             }
 
-            if ($installNew){
+            if ($installNew -or $Force){
 
                 # extract the file to the temporary space (testing the zip file before modifying system)
                 $tempPath  = "$env:TEMP\WoWAddonTest"
@@ -64,7 +64,7 @@ Function Install-TUKAddon {
                 if ($PSCmdlet.ShouldProcess("$($Edition.Metadata.name) $($Edition.Metadata.version)")){
                     if ($validFile){
                         Write-Output "$msgheader Installing new version of $Name ($newversion) to $AddonsPath" 
-                        Remove-ElvUI -AddOnsPath $AddonsPath
+                        Remove-TukAddOn -Name $Name -WoWEdition $WoWEdition
                         try   { 
                             Expand-Archive -Path $Edition.Metadata.DownloadPath -DestinationPath $AddonsPath -Force -ErrorAction Stop 
                             $installSucceeded = $true

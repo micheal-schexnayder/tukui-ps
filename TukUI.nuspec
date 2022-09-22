@@ -12,7 +12,7 @@
     </metadata>
 
     <files>
-        <file src="TukUI-PS\**" target="/" />
+        <file src="TukUI\**" exclude="TukUI\Scripts\**" target="/" />
     </files>
 
 </package>
