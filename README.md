@@ -1,5 +1,7 @@
 # Introduction
 
+NOTE: Given that TukUI has combined all the versions of ElvUI into a single zip file and now have an easy to use and convenient tool to check and update it, I don't really feel a need to maintain this any longer and am archving it. No further development work will be done.
+
 This PowerShell module is designed to work with the World of Warcraft AddOn website: [TukUI.org](https://www.tukui.org/welcome.php). It allows for easy and seemless installations of addons and specifically has functions for installing addons in all three versions of the game: Retail, Wrath of the Lich King, and Classic. This module is a pet project of mine I work on in my free time, when not working on playing World of Warcraft itself!
 
 <font color=blue><strong>This PowerShell module is a work in progress. Many functions work well, but there is lots of room for improvement.</strong></font>
